@@ -4,7 +4,18 @@
   top: 1rem;
 }
 
+.sidebar::after {
+  width: 2px;
+  height: 96%;
+  content: "";
+  background-color: #000;
+  position: absolute;
+  top: 4px;
+  left: 8px;
+}
+
 .dot {
   transition-duration: 0.2s;
   transition-timing-function: linear;
+  padding-left: 1.5px;
 }
