@@ -1,0 +1,10 @@
+.sidebar {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+}
+
+.dot {
+  transition-duration: 0.2s;
+  transition-timing-function: linear;
+}

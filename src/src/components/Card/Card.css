@@ -1,0 +1,6 @@
+.card {
+  border: solid 0.1px #000;
+  height: 500px;
+  text-align: center;
+  margin-top: 2rem;
+}
