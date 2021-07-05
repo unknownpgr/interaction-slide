@@ -3,6 +3,9 @@ import Card from "../Card/Card";
 import "./App.css";
 import Sidebar from "../Sidebar/Sidebar";
 
+const MOVE_FILTER_GAIN = 0.9;
+const QUESTION_NUMBER = 6;
+
 export default function App() {
   const container = useRef();
   const cardContainer = useRef();
@@ -10,9 +13,7 @@ export default function App() {
   const [actualScroll, setActualScroll] = useState(0);
 
   const totalHeight = cardContainer.current?.clientHeight;
-  const frameHeight = totalHeight / 6;
-
-  const rate = 0.9;
+  const frameHeight = totalHeight / QUESTION_NUMBER;
 
   let index = Math.floor(scroll / frameHeight);
 
@@ -20,7 +21,9 @@ export default function App() {
     let dest = index * frameHeight;
     if (isNaN(dest)) dest = 0;
     if (Math.abs(dest - actualScroll) > 0.1)
-      setActualScroll(actualScroll * rate + dest * (1 - rate));
+      setActualScroll(
+        actualScroll * MOVE_FILTER_GAIN + dest * (1 - MOVE_FILTER_GAIN)
+      );
   });
 
   const handleScroll = (event) => {
@@ -36,7 +39,7 @@ export default function App() {
   return (
     <div className="app" onWheel={handleScroll}>
       <Sidebar
-        n={6}
+        n={QUESTION_NUMBER}
         c={index}
         onClick={(i) => {
           setScroll(frameHeight * i);
@@ -48,7 +51,7 @@ export default function App() {
           ref={cardContainer}
           style={{ top: -actualScroll }}
         >
-          {[1, 2, 3, 4, 5, 6].map((x) => (
+          {new Array(QUESTION_NUMBER).fill(0).map((_, x) => (
             <Card key={x} index={x}></Card>
           ))}
         </div>
