@@ -9,13 +9,13 @@ const QUESTION_NUMBER = 6;
 export default function App() {
   const container = useRef();
   const cardContainer = useRef();
-  const [scroll, setScroll] = useState(0);
+  const [hiddenScroll, setHiddenScroll] = useState(0);
   const [actualScroll, setActualScroll] = useState(0);
 
   const totalHeight = cardContainer.current?.clientHeight;
   const frameHeight = totalHeight / QUESTION_NUMBER;
 
-  let index = Math.floor(scroll / frameHeight);
+  let index = Math.floor(hiddenScroll / frameHeight);
 
   requestAnimationFrame(() => {
     let dest = index * frameHeight;
@@ -27,13 +27,13 @@ export default function App() {
   });
 
   const handleScroll = (event) => {
-    let newScroll = scroll + event.deltaY / 5;
+    let newScroll = hiddenScroll + event.deltaY / 5;
     if (newScroll < 0) newScroll = 0;
     if (cardContainer.current != null) {
       let height = totalHeight - frameHeight;
       if (newScroll > height) newScroll = height;
     }
-    setScroll(newScroll);
+    setHiddenScroll(newScroll);
   };
 
   return (
@@ -42,7 +42,7 @@ export default function App() {
         n={QUESTION_NUMBER}
         c={index}
         onClick={(i) => {
-          setScroll(frameHeight * i);
+          setHiddenScroll(frameHeight * i);
         }}
       ></Sidebar>
       <div className="container" ref={container}>
@@ -52,7 +52,7 @@ export default function App() {
           style={{ top: -actualScroll }}
         >
           {new Array(QUESTION_NUMBER).fill(0).map((_, x) => (
-            <Card key={x} index={x}></Card>
+            <Card key={x} index={x + 1}></Card>
           ))}
         </div>
       </div>
