@@ -7,6 +7,7 @@ export default function Sidebar({ n, c, onClick }) {
     let padding = i === c ? "1" : "0.25";
     let paddingTop = 0;
     let paddingBottom = 0;
+    let color = i === c ? "#0066ff" : "black";
 
     if (i === 0) {
       paddingTop = 0 + "rem";
@@ -26,7 +27,7 @@ export default function Sidebar({ n, c, onClick }) {
         }}
         key={i}
         className={"dot"}
-        style={{ paddingTop, paddingBottom }}
+        style={{ paddingTop, paddingBottom, color }}
       >
         ●
       </div>
