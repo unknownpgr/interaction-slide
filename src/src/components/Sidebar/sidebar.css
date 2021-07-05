@@ -4,7 +4,7 @@
   top: 1rem;
 }
 
-.sidebar::after {
+.sidebar::before {
   width: 2px;
   height: 96%;
   content: "";
