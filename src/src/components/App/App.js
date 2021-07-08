@@ -28,7 +28,7 @@ export default function App() {
 
   const handleScroll = (event) => {
     const currentScroll = event.deltaY;
-    if (Math.abs(dest - actualScroll) < 200) {
+    if (Math.abs(dest - actualScroll) < 50) {
       if (currentScroll > 0) {
         if (currentScroll > scroll) {
           if (index < QUESTION_NUMBER - 1) setIndex(index + 1);
@@ -55,10 +55,10 @@ export default function App() {
         <div
           className="card-container"
           ref={cardContainer}
-          style={{ top: -actualScroll }}
+          style={{ top: -actualScroll + frameHeight / 2 }}
         >
-          {new Array(QUESTION_NUMBER).fill(0).map((_, x) => (
-            <Card key={x} index={x + 1}></Card>
+          {new Array(QUESTION_NUMBER).fill(0).map((_, i) => (
+            <Card key={i} index={i + 1} current={index + 1}></Card>
           ))}
         </div>
       </div>

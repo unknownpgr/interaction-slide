@@ -1,6 +1,26 @@
 .card {
-  border: solid 0.1px #000;
-  height: 500px;
+  height: 200px;
+  width: 500px;
   text-align: center;
-  margin-top: 2rem;
+
+  margin-top: 8rem;
+  margin-bottom: 8rem;
+
+  background-color: #fff;
+
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.2));
+  margin-left: 2rem;
+  margin-right: 2rem;
+
+  padding: 1rem;
+
+  border-radius: 10px;
+
+  box-sizing: border-box;
+
+  transition-duration: 0.2s;
+}
+
+.card h3{
+
 }
