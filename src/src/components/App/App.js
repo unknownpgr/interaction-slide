@@ -9,16 +9,16 @@ const QUESTION_NUMBER = 6;
 export default function App() {
   const container = useRef();
   const cardContainer = useRef();
-  const [hiddenScroll, setHiddenScroll] = useState(0);
+
+  const [index, setIndex] = useState(0);
   const [actualScroll, setActualScroll] = useState(0);
+  const [scroll, setScroll] = useState(0);
 
   const totalHeight = cardContainer.current?.clientHeight;
   const frameHeight = totalHeight / QUESTION_NUMBER;
-
-  let index = Math.floor(hiddenScroll / frameHeight);
+  let dest = index * frameHeight;
 
   requestAnimationFrame(() => {
-    let dest = index * frameHeight;
     if (isNaN(dest)) dest = 0;
     if (Math.abs(dest - actualScroll) > 0.1)
       setActualScroll(
@@ -27,13 +27,19 @@ export default function App() {
   });
 
   const handleScroll = (event) => {
-    let newScroll = hiddenScroll + event.deltaY / 5;
-    if (newScroll < 0) newScroll = 0;
-    if (cardContainer.current != null) {
-      let height = totalHeight - frameHeight;
-      if (newScroll > height) newScroll = height;
+    const currentScroll = event.deltaY;
+    if (Math.abs(dest - actualScroll) < 200) {
+      if (currentScroll > 0) {
+        if (currentScroll > scroll) {
+          if (index < QUESTION_NUMBER - 1) setIndex(index + 1);
+        }
+      } else if (currentScroll < 0) {
+        if (currentScroll < scroll) {
+          if (index > 0) setIndex(index - 1);
+        }
+      }
     }
-    setHiddenScroll(newScroll);
+    setScroll(currentScroll);
   };
 
   return (
@@ -42,7 +48,7 @@ export default function App() {
         n={QUESTION_NUMBER}
         c={index}
         onClick={(i) => {
-          setHiddenScroll(frameHeight * i);
+          setIndex(i);
         }}
       ></Sidebar>
       <div className="container" ref={container}>
