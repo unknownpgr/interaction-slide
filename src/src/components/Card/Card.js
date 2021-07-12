@@ -2,7 +2,7 @@ import React from "react";
 import "./Card.css";
 
 export default function Card({ index, current }) {
-  let opacity = index === current ? '1' : '0.5'
+  let opacity = index === current ? '1' : '0.25'
   return (
     <div className="card" style={{ opacity }}>
       <h3>
