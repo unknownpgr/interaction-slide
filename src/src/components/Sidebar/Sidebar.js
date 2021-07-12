@@ -1,5 +1,5 @@
 import React from "react";
-import "./sidebar.css";
+import "./Sidebar.css";
 
 export default function Sidebar({ n, c, onClick }) {
   let dots = [];
