@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import Card from "./Card/Card";
 import Sidebar from "./Sidebar/Sidebar";
+import './CardInteraction.scss';
 
 const MOVE_FILTER_GAIN = 0.9;
 const QUESTION_NUMBER = 6;
@@ -45,7 +46,7 @@ export default function CardInteraction() {
   };
 
   return (
-    <div className="app" onWheel={handleScroll}>
+    <div className="card-interaction" onWheel={handleScroll}>
       <Sidebar
         n={QUESTION_NUMBER}
         c={index}

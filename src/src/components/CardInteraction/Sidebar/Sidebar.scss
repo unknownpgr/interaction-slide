@@ -1,0 +1,26 @@
+.sidebar {
+  position: fixed;
+  left: 18rem;
+  top: 30%;
+
+  .dot {
+    transition-duration: 0.2s;
+    transition-timing-function: linear;
+    padding-left: 1.5px;
+  }
+
+  .dot-a {
+    text-decoration: none;
+  }
+
+  ::before {
+    width: 2px;
+    height: 96%;
+    content: "";
+    background-color: #ddd;
+    position: absolute;
+    top: 4px;
+    left: 8px;
+    z-index: -1;
+  }
+}
