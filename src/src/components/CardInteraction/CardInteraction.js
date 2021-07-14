@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
-import Card from "../Card/Card";
-import Sidebar from "../Sidebar/Sidebar";
+import Card from "./Card/Card";
+import Sidebar from "./Sidebar/Sidebar";
 
 const MOVE_FILTER_GAIN = 0.9;
 const QUESTION_NUMBER = 6;
