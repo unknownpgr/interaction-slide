@@ -7,6 +7,17 @@ const QUESTION_NUMBER = 6;
 const MOVE_TIME = 500;
 
 export default function CardInteraction() {
+
+  /**
+   * ghostRef is reference to the ghost item.
+   * It is used to directly control the position of th ghost itme.
+   * Definitly the position of ghost can be controlled be state.
+   * But there is no reason to use state because it is not related to component reredering.
+   * 
+   * scrollRef and mouseYRef are not DOM element but a variable.
+   * This variables are also not related to rerendering.
+   * Therefore they do not have to be implemented with state.
+   */
   const ghostRef = useRef(null);
   const scrollRef = useRef(0);
   const mouseYRef = useRef(0);
@@ -95,6 +106,10 @@ export default function CardInteraction() {
     setSelectedItem(questions[index]);
   };
 
+  /**
+   * If rendering order changes, transition does not occurs smoothly.
+   * Therefore sort questions to ensure rendering order.
+   */
   const sorted = [...questions].sort();
 
   return (
@@ -114,8 +129,11 @@ export default function CardInteraction() {
       <div
         className="card-container">
         {sorted.map((x) => {
+          /**
+           * Because sorted array is sorted as it shows, 
+           * Index should be retrived manually.
+           */
           const i = questions.indexOf(x);
-
           const isFocused = index === i;
           return <Card
             key={x}
