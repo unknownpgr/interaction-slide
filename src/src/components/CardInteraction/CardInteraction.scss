@@ -1,11 +1,31 @@
 .card-interaction {
-  max-width: 800px;
   height: 100%;
+  width: 100%;
   position: relative;
-  overflow: hidden;
-  margin: 0px auto;
+
+  .container {
+    height: 100%;
+    width: 800px;
+    position: relative;
+    overflow: hidden;
+    margin: 0px auto;
+  }
 
   .card-container {
     position: absolute;
+  }
+
+  #ghost {
+    position: absolute;
+    top: 10px;
+    opacity: 0.2;
+
+    transform: translate(-105%, -50%);
+
+    .card {
+      .inner {
+        margin: 0px;
+      }
+    }
   }
 }
