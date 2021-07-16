@@ -3,18 +3,17 @@ import Card from "./Card/Card";
 import Sidebar from "./Sidebar/Sidebar";
 import './CardInteraction.scss';
 
-const MOVE_FILTER_GAIN = 0.9;
 const QUESTION_NUMBER = 6;
 const MOVE_TIME = 500;
 
 export default function CardInteraction() {
-  const ghostRef = useRef();
+  const ghostRef = useRef(null);
+  const scrollRef = useRef(0);
+  const mouseYRef = useRef(0);
 
   const [index, setIndex] = useState(0);
-  const [my, setMy] = useState(0);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isMoving, setIsMoving] = useState(false);
-  const [scroll, setScroll] = useState(0);
   const [questions, setQuestions] = useState([
     'A',
     'B',
@@ -24,6 +23,7 @@ export default function CardInteraction() {
     'F',
   ]);
 
+  const isDragging = selectedItem !== null;
   const windowHeight = window.innerHeight;
 
   const moveTo = dest => {
@@ -38,18 +38,46 @@ export default function CardInteraction() {
     const currentScroll = event.deltaY;
     if (!isMoving) {
       if (currentScroll > 0) {
-        if (currentScroll > scroll) {
+        if (currentScroll > scrollRef.current) {
           if (index < QUESTION_NUMBER - 1)
             moveTo(index + 1);
         }
       } else if (currentScroll < 0) {
-        if (currentScroll < scroll) {
+        if (currentScroll < scrollRef.current) {
           if (index > 0)
             moveTo(index - 1);
         }
       }
     }
-    setScroll(currentScroll);
+    scrollRef.current = currentScroll;
+  };
+
+  const reorder = () => {
+    if (isMoving) return;
+    if (!isDragging) return;
+
+    let destIndex = index;
+    const y = mouseYRef.current;
+
+    if (y < windowHeight / 3) {
+      if (index > 0) {
+        destIndex = index - 1;
+      }
+    } else if (y > windowHeight * 2 / 3) {
+      if (index < QUESTION_NUMBER - 1) {
+        destIndex = index + 1;
+      }
+    }
+
+    let selectedIndex = questions.indexOf(selectedItem);
+    if (selectedIndex >= 0) {
+      let newQuestions = [...questions];
+      newQuestions[selectedIndex] = newQuestions[destIndex];
+      newQuestions[destIndex] = selectedItem;
+      setQuestions(newQuestions);
+    }
+
+    moveTo(destIndex);
   };
 
   const onMove = (event) => {
@@ -58,30 +86,8 @@ export default function CardInteraction() {
       ghostRef.current.style.left = x + "px";
       ghostRef.current.style.top = y + "px";
     }
-
-    let destIndex = index;
-    if (!isMoving && selectedItem) {
-      if (my < windowHeight / 3) {
-        if (index > 0) {
-          destIndex = index - 1;
-        }
-      } else if (my > windowHeight * 2 / 3) {
-        if (index < QUESTION_NUMBER - 1) {
-          destIndex = index + 1;
-        }
-      }
-
-      let selectedIndex = questions.indexOf(selectedItem);
-      if (selectedIndex >= 0) {
-        let newQuestions = [...questions];
-        newQuestions[selectedIndex] = newQuestions[destIndex];
-        newQuestions[destIndex] = selectedItem;
-        setQuestions(newQuestions);
-      }
-      moveTo(destIndex);
-    }
-
-    setMy(y);
+    mouseYRef.current = y;
+    reorder();
   };
 
   const onHandle = (event) => {
@@ -109,14 +115,14 @@ export default function CardInteraction() {
         className="card-container">
         {sorted.map((x) => {
           const i = questions.indexOf(x);
-          const dragged = selectedItem !== null;
-          const focused = index === i;
+
+          const isFocused = index === i;
           return <Card
             key={x}
             msg={x}
             position={i - index}
-            focused={focused}
-            dragged={dragged}
+            focused={isFocused}
+            dragged={isDragging}
             onHandle={onHandle}></Card>;
         })}
       </div>
