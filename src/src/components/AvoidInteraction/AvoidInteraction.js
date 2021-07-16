@@ -44,7 +44,7 @@ export default function AvoidInteraction() {
     };
 
     const onHCube = () => {
-        window.location.href = 'https://dev.h-cu.be';
+        window.location.href = 'https://dev.the-form.io';
     };
 
     const onNavy = () => {
