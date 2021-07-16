@@ -21,6 +21,7 @@ export default function CardInteraction() {
   const ghostRef = useRef(null);
   const scrollRef = useRef(0);
   const mouseYRef = useRef(0);
+  const reorderRef = useRef(() => { });
 
   const [index, setIndex] = useState(0);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -42,6 +43,7 @@ export default function CardInteraction() {
     setIsMoving(true);
     setTimeout(() => {
       setIsMoving(false);
+      reorderRef.current();
     }, MOVE_TIME);
   };
 
@@ -90,6 +92,7 @@ export default function CardInteraction() {
 
     moveTo(destIndex);
   };
+  reorderRef.current = reorder;
 
   const onMove = (event) => {
     const [x, y] = [event.clientX, event.clientY];
