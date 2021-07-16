@@ -61,7 +61,7 @@ export default function Sidebar({ n, c, onClick }) {
         key={i}
         style={{
           transform: `translate(-50%,-50%) translateY( ${y}px)`,
-          color: selected ? "#0066ff" : "#88bbff"
+          color: selected ? "rgb(0,102,255)" : "rgb(204,224,255)"
         }}
       >
         ●

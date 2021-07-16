@@ -9,14 +9,13 @@
     position: absolute;
     display: block;
     height: 2rem;
+    font-size: 1.5rem;
 
     background-color: none;
     background: none;
     border: none;
 
     transition-duration: 0.2s;
-
-    font-size: 1.5rem;
 
     cursor: pointer;
   }
@@ -25,7 +24,7 @@
     position: absolute;
     width: 2px;
     height: 100%;
-    background-color: #ddd;
+    background-color: rgba(0, 0, 0, 0.04);
     position: absolute;
     transform: translateX(-50%);
     z-index: -1;
