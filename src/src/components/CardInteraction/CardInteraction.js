@@ -96,7 +96,7 @@ export default function CardInteraction() {
       onWheel={handleScroll}
       onMouseMove={onMove}
       onMouseUp={() => setSelectedItem(null)}
-    // onMouseLeave={()}
+      onMouseLeave={() => setSelectedItem(null)}
     >
       <div className="container">
         <Sidebar
@@ -112,7 +112,7 @@ export default function CardInteraction() {
             ref={cardContainer}
             style={{ top: -actualScroll + frameHeight / 2 }}>
             {QUESTIONS.map((x, i) => (
-              <Card key={x} msg={x} index={i} current={index} onHandle={onHandle}></Card>
+              <Card key={x} msg={x} focused={index === i} onHandle={onHandle}></Card>
             ))}
           </div>
         </div>
