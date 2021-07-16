@@ -53,10 +53,15 @@ export default function AvoidInteraction() {
 
     return (
         <div className='avoid-interaction' onMouseMove={onMouseMove}>
+            <div className="title">
+                <h1>
+                    당신은 설문조사를 하려고 한다! 어떤 플랫폼을 사용할까?!??
+                </h1>
+            </div>
             <button style={{ left: x, top: y, backgroundColor: '#fff', color: '#000' }}>구글폼</button>
             <button style={{ left: width / 2, top: height / 2 }} onClick={onHCube} className="clickable">더 폼</button>
             <button style={{ left: width * 3 / 4, top: height / 2, opacity, backgroundColor: '#000' }}>타입폼</button>
-            <button style={{ top: height / 4, backgroundColor: '#1cc805' }} className="nc" onClick={onNavy}>네이비씰</button>
+            <button style={{ top: height / 4, backgroundColor: '#1cc805' }} className="nc clickable" onClick={onNavy}>네이비씰</button>
         </div>
     );
 }
