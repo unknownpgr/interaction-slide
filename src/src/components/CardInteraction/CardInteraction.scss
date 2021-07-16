@@ -3,29 +3,16 @@
   width: 100%;
   position: relative;
 
-  .container {
-    height: 100%;
-    width: 800px;
-    position: relative;
-    overflow: hidden;
-    margin: 0px auto;
-  }
-
   .card-container {
-    position: absolute;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    content: "";
+    overflow: hidden;
   }
 
   #ghost {
     position: absolute;
     top: 10px;
-    opacity: 0.2;
-
-    transform: translate(-105%, -50%);
-
-    .card {
-      .inner {
-        margin: 0px;
-      }
-    }
   }
 }

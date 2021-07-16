@@ -4,72 +4,48 @@ import Sidebar from "./Sidebar/Sidebar";
 import './CardInteraction.scss';
 
 const MOVE_FILTER_GAIN = 0.9;
-const QUESTIONS = [
-  'A',
-  'B',
-  'C',
-  'D',
-  'E',
-  'F',
-];
-const QUESTION_NUMBER = QUESTIONS.length;
+const QUESTION_NUMBER = 6;
+const MOVE_TIME = 500;
 
 export default function CardInteraction() {
-  const container = useRef();
-  const cardContainer = useRef();
   const ghostRef = useRef();
 
   const [index, setIndex] = useState(0);
-  const [actualScroll, setActualScroll] = useState(0);
-  const [scroll, setScroll] = useState(0);
-
-  const [mx, setMx] = useState(0);
   const [my, setMy] = useState(0);
-
   const [selectedItem, setSelectedItem] = useState(null);
+  const [isMoving, setIsMoving] = useState(false);
+  const [scroll, setScroll] = useState(0);
+  const [questions, setQuestions] = useState([
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+  ]);
 
-  const totalHeight = cardContainer.current?.clientHeight;
-  const frameHeight = totalHeight / QUESTION_NUMBER;
   const windowHeight = window.innerHeight;
-  let dest = index * frameHeight;
 
-  const pickedIndex = QUESTIONS.indexOf(selectedItem);
-  if (pickedIndex >= 0 && pickedIndex != index) {
-    QUESTIONS[pickedIndex] = QUESTIONS[index];
-    QUESTIONS[index] = selectedItem;
-  }
-
-  requestAnimationFrame(() => {
-    if (isNaN(dest)) dest = 0;
-    if (Math.abs(dest - actualScroll) > 0.1) {
-      setActualScroll(actualScroll * MOVE_FILTER_GAIN + dest * (1 - MOVE_FILTER_GAIN));
-    }
-
-    if (Math.abs(dest - actualScroll) < 5 && selectedItem) {
-      if (my < windowHeight / 3) {
-        if (index > 0) {
-          setIndex(index - 1);
-        }
-      } else if (my > windowHeight * 2 / 3) {
-        if (index < QUESTION_NUMBER - 1) {
-          setIndex(index + 1);
-        }
-      }
-    }
-  });
+  const moveTo = dest => {
+    setIndex(dest);
+    setIsMoving(true);
+    setTimeout(() => {
+      setIsMoving(false);
+    }, MOVE_TIME);
+  };
 
   const handleScroll = (event) => {
     const currentScroll = event.deltaY;
-    if (Math.abs(dest - actualScroll) < 50) {
+    if (!isMoving) {
       if (currentScroll > 0) {
         if (currentScroll > scroll) {
           if (index < QUESTION_NUMBER - 1)
-            setIndex(index + 1);
+            moveTo(index + 1);
         }
       } else if (currentScroll < 0) {
         if (currentScroll < scroll) {
           if (index > 0)
-            setIndex(index - 1);
+            moveTo(index - 1);
         }
       }
     }
@@ -82,14 +58,38 @@ export default function CardInteraction() {
       ghostRef.current.style.left = x + "px";
       ghostRef.current.style.top = y + "px";
     }
-    setMx(x);
+
+    let destIndex = index;
+    if (!isMoving && selectedItem) {
+      if (my < windowHeight / 3) {
+        if (index > 0) {
+          destIndex = index - 1;
+        }
+      } else if (my > windowHeight * 2 / 3) {
+        if (index < QUESTION_NUMBER - 1) {
+          destIndex = index + 1;
+        }
+      }
+
+      let selectedIndex = questions.indexOf(selectedItem);
+      if (selectedIndex >= 0) {
+        let newQuestions = [...questions];
+        newQuestions[selectedIndex] = newQuestions[destIndex];
+        newQuestions[destIndex] = selectedItem;
+        setQuestions(newQuestions);
+      }
+      moveTo(destIndex);
+    }
+
     setMy(y);
   };
 
   const onHandle = (event) => {
     event.preventDefault();
-    setSelectedItem(QUESTIONS[index]);
+    setSelectedItem(questions[index]);
   };
+
+  const sorted = [...questions].sort();
 
   return (
     <div className="card-interaction"
@@ -98,29 +98,32 @@ export default function CardInteraction() {
       onMouseUp={() => setSelectedItem(null)}
       onMouseLeave={() => setSelectedItem(null)}
     >
-      <div className="container">
-        <Sidebar
-          n={QUESTION_NUMBER}
-          c={index}
-          onClick={(i) => {
-            setIndex(i);
-          }}>
-        </Sidebar>
-        <div className="container" ref={container}>
-          <div
-            className="card-container"
-            ref={cardContainer}
-            style={{ top: -actualScroll + frameHeight / 2 }}>
-            {QUESTIONS.map((x, i) => (
-              <Card key={x} msg={x} focused={index === i} onHandle={onHandle}></Card>
-            ))}
-          </div>
-        </div>
+      <Sidebar
+        n={QUESTION_NUMBER}
+        c={index}
+        onClick={(i) => {
+          moveTo(i);
+        }}>
+      </Sidebar>
+      <div
+        className="card-container">
+        {sorted.map((x) => {
+          const i = questions.indexOf(x);
+          const dragged = selectedItem !== null;
+          const focused = index === i;
+          return <Card
+            key={x}
+            msg={x}
+            position={i - index}
+            focused={focused}
+            dragged={dragged}
+            onHandle={onHandle}></Card>;
+        })}
       </div>
       <div id="ghost" ref={ghostRef} hidden={selectedItem === null}>
-        <Card></Card>
+        <Card isGhost></Card>
       </div>
-    </div>
+    </div >
   );
 }
 
