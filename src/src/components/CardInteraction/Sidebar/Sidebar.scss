@@ -1,26 +1,33 @@
 .sidebar {
   position: fixed;
+  z-index: 100;
   left: 18rem;
-  top: 30%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 
   .dot {
+    position: absolute;
+    display: block;
+    height: 2rem;
+
+    background-color: none;
+    background: none;
+    border: none;
+
     transition-duration: 0.2s;
-    transition-timing-function: linear;
-    padding-left: 1.5px;
+
+    font-size: 1.5rem;
+
+    cursor: pointer;
   }
 
-  .dot-a {
-    text-decoration: none;
-  }
-
-  ::before {
+  .bar {
+    position: absolute;
     width: 2px;
-    height: 96%;
-    content: "";
+    height: 100%;
     background-color: #ddd;
     position: absolute;
-    top: 4px;
-    left: 8px;
+    transform: translateX(-50%);
     z-index: -1;
   }
 }

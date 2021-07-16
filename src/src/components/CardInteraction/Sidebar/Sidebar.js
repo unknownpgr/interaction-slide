@@ -1,38 +1,81 @@
 import React from "react";
 import "./Sidebar.scss";
 
-export default function Sidebar({ n, c, onClick }) {
-  let dots = [];
-  for (let i = 0; i < n; i++) {
-    let padding = i === c ? "2" : "0.5";
-    let paddingTop = 0;
-    let paddingBottom = 0;
-    let color = i === c ? "#0066ff" : "#88bbff";
+/**
+ * Let
+ *    default margin = dm
+ *    additional margin = am
+ *    total length   = L
+ * 
+ * Then L = dm * (n-1) + am * 2
+ * Suppose that am = dm * r.
+ * Then L = dm * (n-1) + dm * r * 2
+ *        = dm * (n-1+r*2)
+ * 
+ * Therefore dm = L / (n-1+r*2)
+ */
 
+const SIDEBAR_HEIGHT = 200;
+const ADDITIONAL_MARGIN_RATE = 1;
+
+export default function Sidebar({ n, c, onClick }) {
+
+  // Calculate default margin(dm) and additional marign(am)
+  const dm = SIDEBAR_HEIGHT / (n - 1 + ADDITIONAL_MARGIN_RATE * 2);
+  const am = dm * ADDITIONAL_MARGIN_RATE;
+
+  let dots = [];
+  let y = 0;
+
+  for (let i = 0; i < n; i++) {
+    const selected = i === c;
+    let mt = dm;
+    let mb = dm;
+
+    // Calculate upper margin and lower margin
     if (i === 0) {
-      paddingTop = 0 + "rem";
-      paddingBottom = padding * 2 + "rem";
+      mt = 0;
+      if (selected) {
+        mb += am * 2;
+      }
     } else if (i === n - 1) {
-      paddingTop = padding * 2 + "rem";
-      paddingBottom = 0 + "rem";
+      mb = 0;
+      if (selected) {
+        mt += am * 2;
+      }
     } else {
-      paddingTop = padding + "rem";
-      paddingBottom = padding + "rem";
+      if (selected) {
+        mb += am;
+        mt += am;
+      }
     }
 
+    // Add upper margin
+    y += mt;
+
+    // Place component
     dots.push(
-      <a href="javascript:;" className="dot-a" key={i}>
-        <div
-          onClick={() => {
-            onClick(i);
-          }}
-          className="dot"
-          style={{ paddingTop, paddingBottom, color }}
-        >
-          ●
-        </div>
-      </a>
+      <button
+        className="dot"
+        onClick={() => { onClick(i); }}
+        key={i}
+        style={{
+          transform: `translate(-50%,-50%) translateY( ${y}px)`,
+          color: selected ? "#0066ff" : "#88bbff"
+        }}
+      >
+        ●
+      </button>
     );
+
+    // Add lower margin
+    y += mb;
   }
-  return <div className="sidebar">{dots}</div>;
+
+  return (
+    <div className="sidebar" style={{ height: y }}>
+      {dots}
+      < div className="bar" ></div >
+    </div >
+  );
 }
