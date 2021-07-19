@@ -6,6 +6,7 @@ import './CardInteraction.scss';
 const QUESTIONS = ['A', 'B', 'C', 'D', 'E', 'F'];
 const QUESTION_NUMBER = QUESTIONS.length;
 const MOVE_TIME = 500;
+const MOVE_THRESHOLD = 128;
 
 export default function CardInteraction() {
 
@@ -62,6 +63,7 @@ export default function CardInteraction() {
    */
   const isDragging = selectedItem !== null;
   const windowHeight = window.innerHeight;
+  const areaHeight = windowHeight / 2 - MOVE_THRESHOLD;
 
   const focus = dest => {
     setIndex(dest);
@@ -79,13 +81,12 @@ export default function CardInteraction() {
     let destIndex = index;
     const y = mouseYRef.current;
     const centerLine = windowHeight / 2;
-    const threshold = 64;
 
-    if (y < centerLine - threshold) {
+    if (y < centerLine - MOVE_THRESHOLD) {
       if (index > 0) {
         destIndex = index - 1;
       }
-    } else if (y > centerLine + threshold) {
+    } else if (y > centerLine + MOVE_THRESHOLD) {
       if (index < QUESTION_NUMBER - 1) {
         destIndex = index + 1;
       }
@@ -149,6 +150,16 @@ export default function CardInteraction() {
       onMouseUp={() => setSelectedItem(null)}
       onMouseLeave={() => setSelectedItem(null)}
     >
+      <div className="move-area" style={{ top: 0, height: areaHeight, opacity: isDragging ? 0.1 : 0 }}>
+        <div className="text-area">
+          ▲
+        </div>
+      </div>
+      <div className="move-area" style={{ bottom: 0, height: areaHeight, opacity: isDragging ? 0.1 : 0 }}>
+        <div className="text-area">
+          ▼
+        </div>
+      </div>
       <Sidebar
         n={QUESTION_NUMBER}
         c={index}
