@@ -6,15 +6,17 @@ export default function Card({ msg, position, focused, dragged, onHandle, isGhos
   let style = {};
   if (isGhost) {
     style = { transform: `translate(-105%, -50%)` };
-    style.filter = 'drop-shadow(0 0 10px rgba(0, 0, 0, 0.2))';
+    style.boxShadow = 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px';
   } else {
     style = { transform: `translate(-50%, -50%) translateY(${position * 300}px)` };
     if (focused) {
       if (dragged) {
         style.opacity = '0';
       } else {
-        style.filter = 'drop-shadow(0 0 10px rgba(0, 0, 0, 0.2))';
+        style.boxShadow = 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px';
       }
+    } else {
+      style.transform += ' scale(0.975)';
     }
   }
 
