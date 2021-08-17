@@ -42,7 +42,7 @@ function getChoicePosition(i, j) {
  */
 function getHandlePosition(i, j) {
   let [x, y] = getChoicePosition(i, j);
-  x = x + W + 16;
+  x = x + W;
   y = y;
   return [x, y];
 }
@@ -180,9 +180,9 @@ export default function BranchingInteraction() {
 
       curve.current.setAttributeNS(null, "d", d);
       if (ex < sx) {
-        curve.current.setAttributeNS(null, "stroke", "#f44");
+        curve.current.setAttributeNS(null, "stroke", "#c44");
       } else if (destBody >= 0) {
-        curve.current.setAttributeNS(null, "stroke", "#4f4");
+        curve.current.setAttributeNS(null, "stroke", "#4a4");
       } else {
         curve.current.setAttributeNS(null, "stroke", "black");
       }
@@ -253,6 +253,7 @@ export default function BranchingInteraction() {
                 stroke="black"
                 strokeWidth="4"
                 fill="none"
+                fill-opacity="1"
               />
             )}
           </svg>
