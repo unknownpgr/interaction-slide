@@ -5,8 +5,8 @@ const choices = [
   [
     "a. 나는 죽음을 택하겠다!",
     "b. 산다는게-다그런거지- 누구나 민머리로와",
-    "c",
-    "d",
+    "c. 먐",
+    "d. 먐먐",
   ],
   ["1번", "2번", "3번"],
   [
@@ -16,6 +16,7 @@ const choices = [
     "대한사람 대한으로 길이 보전하세",
   ],
   ["대신귀", "여운알", "파카를", "드리겠", "습니다"],
+  ["이 항목은", "가로로 길어서", "오버플로우를", "일으킵니다."],
 ];
 
 const TOP = 100;
@@ -92,6 +93,7 @@ export default function BranchingInteraction() {
 
   // References
   const curve = useRef(null);
+  const frame = useRef(null);
 
   // Constants
   const bodyPositions = choices.map((_, i) => getBodyPosition(i));
@@ -119,7 +121,9 @@ export default function BranchingInteraction() {
     if (selectedHandle) {
       e.preventDefault();
       const [sx, sy] = getHandlePosition(...selectedHandle);
-      const mx = e.clientX;
+      if (!frame.current) return;
+      const rect = frame.current.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
       const my = e.clientY;
 
       let ex = mx;
@@ -137,6 +141,13 @@ export default function BranchingInteraction() {
       let d = getCurve(sx, sy, ex, ey);
 
       curve.current.setAttributeNS(null, "d", d);
+      if (ex < sx) {
+        curve.current.setAttributeNS(null, "stroke", "#f44");
+      } else if (destBody >= 0) {
+        curve.current.setAttributeNS(null, "stroke", "#4f4");
+      } else {
+        curve.current.setAttributeNS(null, "stroke", "black");
+      }
     }
   }
 
@@ -152,50 +163,62 @@ export default function BranchingInteraction() {
   }
 
   return (
-    <div
-      className="frame"
-      onMouseUp={onRelease}
-      onMouseLeave={onRelease}
-      onMouseMove={onMove}>
-      <div className="curve">
-        <svg>
-          {selectedHandle && (
-            <path
-              ref={curve}
-              id="curveCurrent"
-              stroke="black"
-              strokeWidth="4"
-              fill="none"
-            />
-          )}
-          {Object.entries(connection).map(([choiceIndex, dest]) => {
-            if (selectedHandle && hashIndex(...selectedHandle) === choiceIndex)
-              return null;
+    <div className="scroll">
+      <div
+        className="frame"
+        ref={frame}
+        onMouseUp={onRelease}
+        onMouseLeave={onRelease}
+        onMouseMove={onMove}
+        style={{ width: positions[choices.length - 1][0] + W + 64 }}>
+        {choices.map((x, i) => {
+          return <Card key={i} index={i} choices={x} onGrab={onGrab}></Card>;
+        })}
+        <div className="curve">
+          <svg>
+            {Object.entries(connection).map(([choiceIndex, dest]) => {
+              if (
+                selectedHandle &&
+                hashIndex(...selectedHandle) === choiceIndex
+              )
+                return null;
 
-            const [i, j] = unHashIndex(choiceIndex);
+              const [i, j] = unHashIndex(choiceIndex);
 
-            const [sx, sy] = getHandlePosition(i, j);
-            const [ex, ey] = getBodyPosition(dest);
+              const [sx, sy] = getHandlePosition(i, j);
+              const [ex, ey] = getBodyPosition(dest);
 
-            const d = getCurve(sx, sy, ex, ey);
+              const d = getCurve(sx, sy, ex, ey);
 
-            return (
+              let color = "black";
+              if (ex < sx) {
+                color = "red";
+              }
+
+              return (
+                <path
+                  key={choiceIndex + "/" + dest}
+                  ref={curve}
+                  id="curveCurrent"
+                  stroke={color}
+                  strokeWidth="4"
+                  fill="none"
+                  d={d}
+                />
+              );
+            })}
+            {selectedHandle && (
               <path
-                key={choiceIndex + "/" + dest}
                 ref={curve}
                 id="curveCurrent"
                 stroke="black"
                 strokeWidth="4"
                 fill="none"
-                d={d}
               />
-            );
-          })}
-        </svg>
+            )}
+          </svg>
+        </div>
       </div>
-      {choices.map((x, i) => {
-        return <Card key={i} index={i} choices={x} onGrab={onGrab}></Card>;
-      })}
     </div>
   );
 }
