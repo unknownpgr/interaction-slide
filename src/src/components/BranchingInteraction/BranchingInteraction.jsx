@@ -26,10 +26,20 @@ const H = 100 * 1.5;
 const CHOICE_DISTANCE = 48;
 const positions = choices.map((_, i) => [i * DIST + 32, TOP]);
 
+/**
+ * @param {Number} i Index of question
+ * @param {Number} j Index of choice
+ * @returns {Array} [x, y]
+ */
 function getChoicePosition(i, j) {
   return [positions[i][0], TOP + H + CHOICE_DISTANCE * j + 32];
 }
 
+/**
+ * @param {Number} i Index of question
+ * @param {Number} j Index of choice
+ * @returns {Array} [x, y]
+ */
 function getHandlePosition(i, j) {
   let [x, y] = getChoicePosition(i, j);
   x = x + W + 16;
@@ -37,24 +47,70 @@ function getHandlePosition(i, j) {
   return [x, y];
 }
 
-function getBodyPosition(i) {
+/**
+ * @param {Index of question} i
+ * @returns {Array} [x, y]
+ */
+function getAnchorPosition(i) {
   let [x, y] = positions[i];
   y += H / 2;
   return [x, y];
 }
 
-function getCurve(sx, sy, ex, ey) {
+/** *
+ * @param {Number} sx x of start position
+ * @param {Number} sy y of start position
+ * @param {Number} ex x of end position
+ * @param {Number} ey y of end position
+ * @returns {String} SVG path d string
+ */
+function getCurveString(sx, sy, ex, ey) {
   const C = (ex - sx) / 2;
   return `M${sx},${sy} C${sx + C},${sy} ${ex - C},${ey} ${ex},${ey}`;
 }
 
-function hashIndex(x, y) {
-  return x + " " + y;
+/**
+ * Calculate nearest body anchor from given position
+ * and return [index of anchor, distance to that anchor]
+ *
+ * @param {Number} x
+ * @param {Number} y
+ * @returns {Array} [index, distance square]
+ */
+const bodyPositions = choices.map((_, i) => getAnchorPosition(i));
+function getNearestAnchor(x, y) {
+  let minDist2 = 99999999;
+  let minIndex = -1;
+
+  bodyPositions.forEach(([x2, y2], i) => {
+    const dist = (x2 - x) * (x2 - x) + (y2 - y) * (y2 - y);
+    if (dist < minDist2) {
+      minDist2 = dist;
+      minIndex = i;
+    }
+  });
+
+  return [minIndex, minDist2];
 }
 
+/**
+ * Convert integer tuple to string
+ * @param {Number} i
+ * @param {Number} j
+ * @returns {String} hash
+ */
+function hashIndex(i, j) {
+  return i + " " + j;
+}
+
+/**
+ * Convert hashed string to integer tuple
+ * @param {String} hashed
+ * @returns {Array} [i, j]
+ */
 function unHashIndex(hashed) {
-  const [x, y] = hashed.split(" ");
-  return [+x, +y];
+  const [i, j] = hashed.split(" ");
+  return [+i, +j];
 }
 
 function Card({ index, choices, onGrab }) {
@@ -95,29 +151,11 @@ export default function BranchingInteraction() {
   const curve = useRef(null);
   const frame = useRef(null);
 
-  // Constants
-  const bodyPositions = choices.map((_, i) => getBodyPosition(i));
-
-  function onGrab(i, j) {
+  function handleGrab(i, j) {
     setSelectedHandle([i, j]);
   }
 
-  function getNearestBodyPosition(x, y) {
-    let minDist2 = 99999999;
-    let minPos = -1;
-
-    bodyPositions.forEach(([x2, y2], i) => {
-      const dist = (x2 - x) * (x2 - x) + (y2 - y) * (y2 - y);
-      if (dist < minDist2) {
-        minDist2 = dist;
-        minPos = i;
-      }
-    });
-
-    return [minPos, minDist2];
-  }
-
-  function onMove(e) {
+  function handleMove(e) {
     if (selectedHandle) {
       e.preventDefault();
       const [sx, sy] = getHandlePosition(...selectedHandle);
@@ -129,16 +167,16 @@ export default function BranchingInteraction() {
       let ex = mx;
       let ey = my;
 
-      const [index, dist2] = getNearestBodyPosition(mx, my);
+      const [index, dist2] = getNearestAnchor(mx, my);
 
       if (dist2 < 100) {
-        [ex, ey] = getBodyPosition(index);
+        [ex, ey] = getAnchorPosition(index);
         if (destBody !== index) setDestBody(index);
       } else {
         if (destBody > 0) setDestBody(-1);
       }
 
-      let d = getCurve(sx, sy, ex, ey);
+      let d = getCurveString(sx, sy, ex, ey);
 
       curve.current.setAttributeNS(null, "d", d);
       if (ex < sx) {
@@ -151,7 +189,7 @@ export default function BranchingInteraction() {
     }
   }
 
-  function onRelease() {
+  function handleRelease() {
     if (destBody >= 0) {
       setConnection({
         ...connection,
@@ -167,12 +205,14 @@ export default function BranchingInteraction() {
       <div
         className="frame"
         ref={frame}
-        onMouseUp={onRelease}
-        onMouseLeave={onRelease}
-        onMouseMove={onMove}
+        onMouseUp={handleRelease}
+        onMouseLeave={handleRelease}
+        onMouseMove={handleMove}
         style={{ width: positions[choices.length - 1][0] + W + 64 }}>
         {choices.map((x, i) => {
-          return <Card key={i} index={i} choices={x} onGrab={onGrab}></Card>;
+          return (
+            <Card key={i} index={i} choices={x} onGrab={handleGrab}></Card>
+          );
         })}
         <div className="curve">
           <svg>
@@ -184,11 +224,10 @@ export default function BranchingInteraction() {
                 return null;
 
               const [i, j] = unHashIndex(choiceIndex);
-
               const [sx, sy] = getHandlePosition(i, j);
-              const [ex, ey] = getBodyPosition(dest);
+              const [ex, ey] = getAnchorPosition(dest);
 
-              const d = getCurve(sx, sy, ex, ey);
+              const d = getCurveString(sx, sy, ex, ey);
 
               let color = "black";
               if (ex < sx) {
